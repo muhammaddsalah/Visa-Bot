@@ -1,0 +1,97 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 200 33% 98%;
+    --foreground: 200 9% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 9% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 9% 13%;
+
+    --primary: 210 79% 46%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 200 15% 73%;
+    --secondary-foreground: 200 9% 15%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 200 9% 45%;
+
+    --accent: 200 15% 73%;
+    --accent-foreground: 200 9% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 15% 86%;
+    --input: 200 15% 86%;
+    --ring: 210 79% 46%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 200 9% 15%;
+    --foreground: 200 20% 96%;
+
+    --card: 200 9% 15%;
+    --card-foreground: 200 20% 96%;
+
+    --popover: 200 9% 15%;
+    --popover-foreground: 200 20% 96%;
+
+    --primary: 210 79% 46%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 200 9% 25%;
+    --secondary-foreground: 200 20% 96%;
+
+    --muted: 200 9% 25%;
+    --muted-foreground: 200 9% 70%;
+
+    --accent: 200 9% 25%;
+    --accent-foreground: 200 20% 96%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 9% 25%;
+    --input: 200 9% 25%;
+    --ring: 210 79% 46%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    direction: rtl; /* Right-to-left for Arabic content */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-arabic;
+  }
+}
+
+@layer utilities {
+  .font-arabic {
+    font-family: 'Tajawal', sans-serif;
+  }
+}
