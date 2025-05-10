@@ -87,20 +87,61 @@ const DOVAppointmentForm = () => {
     embassy: 2500
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // محاكاة إرسال النموذج
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // إظهار رسالة النجاح للعميل مباشرة
       setShowSuccessMessage(true);
+      toast.success('تم حجز الموعد بنجاح!');
+      
+      // إعادة تعيين النموذج
+      setFullName('');
+      setEmail('');
+      setPhone('');
+      setSelectedCountry('');
+      setSelectedDate('');
+      setPaymentMethod('');
+      setPaymentReceipt(null);
+      setSenderAccount('');
+      setSelectedDocuments([]);
+      setOtherDocuments('');
+      
+      // محاولة إرسال البيانات للخادم في الخلفية
+      const formData = new FormData();
+      formData.append('name', fullName);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('country', selectedCountry);
+      formData.append('visaType', 'DOV');
+      formData.append('paymentId', senderAccount);
+      formData.append('paymentAmount', bookingFees[appointmentType].toString());
+      formData.append('paymentStatus', 'completed');
+      formData.append('paymentDate', new Date().toISOString());
+      
+      if (paymentReceipt) {
+        formData.append('paymentReceipt', paymentReceipt);
+      }
+
+      // محاولة إرسال البيانات للخادم في الخلفية
+      fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        body: formData
+      }).catch(error => {
+        console.error('خطأ في إرسال البيانات للخادم:', error);
+      });
       
       // إخفاء رسالة النجاح بعد 5 ثواني
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 5000);
-    }, 1500);
+    } catch (error) {
+      console.error('خطأ في إرسال النموذج:', error);
+      toast.error('حدث خطأ أثناء إرسال النموذج');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // شرط تفعيل الزر
@@ -129,7 +170,8 @@ const DOVAppointmentForm = () => {
             <CheckCircle2 className="w-6 h-6 text-green-500" />
             <div>
               <p className="font-bold">تم حجز الموعد بنجاح!</p>
-              <p className="text-sm">سيتم إرسال تفاصيل الموعد عبر رسالة نصية</p>
+              <p className="text-sm">سيتم التواصل معك قريباً لتأكيد الموعد</p>
+              <p className="text-sm mt-2">يمكنك الاحتفاظ برقم عملية الدفع: {senderAccount}</p>
             </div>
           </motion.div>
         )}

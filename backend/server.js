@@ -1,37 +1,53 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// إعداد multer للتعامل مع الملفات
+const upload = multer({ dest: 'uploads/' });
+
+// التحقق من وجود المتغيرات البيئية المطلوبة
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  console.error('خطأ: المتغيرات البيئية EMAIL_USER و EMAIL_PASS مطلوبة');
+  process.exit(1);
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // قائمة المسؤولين
 const ADMIN_EMAILS = [
   'omohamedsalah55@gmail.com',
-  'admin@example.com',  // أضف هنا بريد المسؤول الثاني
-  // يمكنك إضافة المزيد من عناوين البريد الإلكتروني هنا
+  'admin@example.com',
 ];
 
 // إعداد مرسل البريد الإلكتروني
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   }
 });
 
+// التحقق من اتصال البريد الإلكتروني
+transporter.verify(function(error, success) {
+  if (error) {
+    console.error('خطأ في إعداد البريد الإلكتروني:', error);
+  } else {
+    console.log('تم إعداد البريد الإلكتروني بنجاح');
+  }
+});
+
 // دالة لإرسال البريد الإلكتروني لجميع المسؤولين
 async function notifyAllAdmins(mailOptions) {
   try {
-    // إرسال البريد لكل مسؤول
     const sendPromises = ADMIN_EMAILS.map(adminEmail => {
       const adminMailOptions = {
         ...mailOptions,
@@ -49,8 +65,11 @@ async function notifyAllAdmins(mailOptions) {
 }
 
 // مسار التسجيل مع الدفع
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', upload.single('paymentReceipt'), async (req, res) => {
   try {
+    console.log('تم استلام طلب جديد:', req.body);
+    console.log('الملف المرفق:', req.file);
+
     const { 
       name, 
       email, 
@@ -62,6 +81,22 @@ app.post('/api/register', async (req, res) => {
       paymentStatus,
       paymentDate
     } = req.body;
+
+    // التحقق من البيانات المطلوبة
+    if (!name || !email || !phone || !country || !visaType || !paymentId || !paymentAmount) {
+      return res.status(400).json({ 
+        error: 'جميع الحقول مطلوبة',
+        missingFields: {
+          name: !name,
+          email: !email,
+          phone: !phone,
+          country: !country,
+          visaType: !visaType,
+          paymentId: !paymentId,
+          paymentAmount: !paymentAmount
+        }
+      });
+    }
 
     // إعداد محتوى البريد الإلكتروني للمسؤولين
     const adminMailOptions = {
@@ -79,6 +114,7 @@ app.post('/api/register', async (req, res) => {
         <p><strong>المبلغ:</strong> ${paymentAmount}</p>
         <p><strong>حالة الدفع:</strong> ${paymentStatus}</p>
         <p><strong>تاريخ الدفع:</strong> ${paymentDate}</p>
+        ${req.file ? `<p><strong>صورة وصل الدفع:</strong> تم استلام الصورة</p>` : ''}
       `
     };
 
@@ -104,7 +140,10 @@ app.post('/api/register', async (req, res) => {
     res.status(200).json({ message: 'تم التسجيل والدفع بنجاح' });
   } catch (error) {
     console.error('خطأ في التسجيل:', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء التسجيل' });
+    res.status(500).json({ 
+      error: 'حدث خطأ أثناء التسجيل',
+      details: error.message
+    });
   }
 });
 
