@@ -5,29 +5,20 @@ import DOVAppointmentForm from "./DOVAppointmentForm";
 import EmbassyBookingForm from "./EmbassyBookingForm";
 import ConsultationBookingForm from "./ConsultationBookingForm";
 
-const ServiceSelectionForm = () => {
-  const [selectedService, setSelectedService] = useState("");
+interface Service {
+  id: string;
+  title: string;
+  price: number;
+}
 
-  const services = [
-    {
-      id: "consultation",
-      title: "حجز موعد استشارة للدراسة في إيطاليا",
-      description: "احصل على استشارة متخصصة حول الدراسة في إيطاليا",
-      icon: MessageSquare
-    },
-    {
-      id: "embassy",
-      title: "حجز موعد سفارة إيطاليا",
-      description: "احجز موعدك في سفارة إيطاليا",
-      icon: Building2
-    },
-    {
-      id: "dov",
-      title: "حجز موعد إعلان القيمة (DOV) للدراسة في إيطاليا",
-      description: "احصل على معادلة شهادتك للدراسة في إيطاليا",
-      icon: File
-    }
-  ];
+interface ServiceSelectionFormProps {
+  country: string;
+  services: Service[];
+  availableDates: { value: string; label: string; }[];
+}
+
+const ServiceSelectionForm = ({ country, services, availableDates }: ServiceSelectionFormProps) => {
+  const [selectedService, setSelectedService] = useState("");
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -56,7 +47,6 @@ const ServiceSelectionForm = () => {
               />
               <div className="mr-4 flex-1">
                 <div className="flex items-center mb-2">
-                  <service.icon className="w-5 h-5 text-visabot-blue ml-2" />
                   <label
                     htmlFor={service.id}
                     className="text-lg font-semibold cursor-pointer"
@@ -64,7 +54,7 @@ const ServiceSelectionForm = () => {
                     {service.title}
                   </label>
                 </div>
-                <p className="text-gray-600 text-sm">{service.description}</p>
+                <p className="text-gray-600 text-sm">السعر: {service.price} ج.م</p>
               </div>
             </div>
           ))}

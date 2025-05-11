@@ -24,9 +24,6 @@ const ConsultationBookingForm = () => {
   // التواريخ المتاحة للحجز
   const availableDates = [
     { value: "2024-06-12", label: "12 يونيو 2024" },
-    { value: "2024-06-25", label: "25 يونيو 2024" },
-    { value: "2024-07-03", label: "3 يوليو 2024" },
-    { value: "2024-07-15", label: "15 يوليو 2024" },
     { value: "2024-07-28", label: "28 يوليو 2024" }
   ];
 

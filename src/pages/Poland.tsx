@@ -158,7 +158,6 @@ const Poland = () => {
             ]}
             availableDates={[
               { value: "2025-05-10", label: "10/05/2025" },
-              { value: "2025-06-01", label: "01/06/2025" },
               { value: "2025-06-20", label: "20/06/2025" }
             ]}
           />
